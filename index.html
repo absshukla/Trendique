@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Shoppable Feed</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Shop My Feed</h1>
+        <p>Click any post to shop the looks.</p>
+    </header>
+
+    <!-- This is where the social grid will be injected -->
+    <main id="feed-grid" class="grid-container"></main>
+
+    <!-- Modal for showing products when a post is clicked -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div class="modal-layout">
+                <img id="modal-image" src="" alt="Post content">
+                <div id="modal-products" class="product-list">
+                    <!-- Products will be injected here via JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
