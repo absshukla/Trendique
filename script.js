@@ -66,15 +66,6 @@ const POSTS = [
     ],
   },
   {
-    id: 1786087206277,
-    image: "",
-    caption: "",
-    tags: [],
-    products: [
-
-    ],
-  },
-  {
     id: 1786087301514,
     image: "",
     caption: "",
