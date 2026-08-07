@@ -32,6 +32,16 @@
   .img-toggle { display: flex; gap: 8px; margin-bottom: 8px; }
   .img-toggle button { flex: 1; }
   .thumb { max-width: 120px; border-radius: 4px; margin-top: 8px; display: block; }
+  .settings-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: none; justify-content: flex-end; z-index: 60; }
+  .settings-overlay.open { display: flex; }
+  .settings-drawer { background: #1B1B1D; width: 100%; max-width: 360px; height: 100%; padding: 24px 20px; overflow-y: auto; border-left: 1px solid #3A3A3D; }
+  .post-item { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px dashed #3A3A3D; }
+  .post-item img { width: 56px; height: 56px; object-fit: cover; border-radius: 4px; }
+  .post-item .info { flex: 1; }
+  .post-item .info p { margin: 0; font-size: 13.5px; }
+  .post-item .info span { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #8B8478; }
+  .btn-danger { border-color: #D64545; color: #D64545; }
+  .btn-danger:hover { background: #D64545; color: #F2ECDE; }
 </style>
 </head>
 <body>
@@ -64,15 +74,48 @@
         <p class="eyebrow" style="text-align:left; margin-bottom:4px;">Logged in as <span id="whoami"></span></p>
         <h1 style="font-family:'Fraunces',serif; font-size:30px; margin:0 0 4px;">Admin panel</h1>
       </div>
-      <button class="btn" id="logoutBtn">Log out</button>
+      <div style="display:flex; gap:8px;">
+        <button class="btn" id="settingsBtn" title="GitHub connection">&#9881;</button>
+        <button class="btn" id="logoutBtn">Log out</button>
+      </div>
     </div>
 
     <div class="warn">
       Heads up: this login is a simple front-door lock, not a secure account system — anyone who reads this page's code can see the password list. Don't reuse a real password here. Real access to your files is controlled separately through your GitHub repo's Collaborators settings.
     </div>
 
+    <!-- SETTINGS DRAWER -->
+    <div id="settingsOverlay" class="settings-overlay">
+      <div class="settings-drawer" id="settingsDrawer">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <h2 style="font-family:'Fraunces',serif; font-size:20px; margin:0;">GitHub connection</h2>
+          <button class="btn" id="closeSettings">&times;</button>
+        </div>
+        <p class="note" style="margin-top:0;">Create a token: GitHub → Settings (your account) → Developer settings → Personal access tokens → Fine-grained tokens → Generate new. Repository access: this repo only. Permissions: Contents → Read and write.</p>
+        <div class="field">
+          <label>GitHub username</label>
+          <input id="gh-user" placeholder="e.g. absshukla" />
+        </div>
+        <div class="field">
+          <label>Repository name</label>
+          <input id="gh-repo" placeholder="e.g. Trendique" />
+        </div>
+        <div class="field">
+          <label>Personal access token</label>
+          <input id="gh-token" type="password" placeholder="github_pat_..." />
+        </div>
+        <div class="checkbox-row" style="justify-content:flex-start;">
+          <input type="checkbox" id="gh-remember" />
+          <label for="gh-remember">Remember this connection on this device</label>
+        </div>
+        <button class="btn btn-primary" id="gh-save" type="button" style="width:100%;">Save connection</button>
+        <p class="note" id="gh-status"></p>
+      </div>
+    </div>
+
     <div class="tabs">
       <button class="tab active" data-tab="product">Add product</button>
+      <button class="tab" data-tab="manage">My posts</button>
       <button class="tab" data-tab="team" id="teamTabBtn">Team</button>
     </div>
 
@@ -108,41 +151,49 @@
 
       <hr style="border:none; border-top:1px solid #3A3A3D; margin:26px 0;" />
 
-      <p class="field label" style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#C9A227;">GitHub connection (for one-click publish)</p>
-      <p class="note" style="margin-top:0;">Create a token: GitHub → Settings (your account) → Developer settings → Personal access tokens → Fine-grained tokens → Generate new. Under Repository access, pick this repo only. Under Permissions, set <strong>Contents: Read and write</strong>. Copy the token here.</p>
-      <div class="field">
-        <label>GitHub username</label>
-        <input id="gh-user" placeholder="e.g. absshukla" />
-      </div>
-      <div class="field">
-        <label>Repository name</label>
-        <input id="gh-repo" placeholder="e.g. Trendique" />
-      </div>
-      <div class="field">
-        <label>Personal access token</label>
-        <input id="gh-token" type="password" placeholder="github_pat_..." />
-      </div>
-      <div class="checkbox-row" style="justify-content:flex-start;">
-        <input type="checkbox" id="gh-remember" />
-        <label for="gh-remember">Remember this connection on this device</label>
-      </div>
-      <button class="btn" id="gh-save" type="button">Save connection</button>
-      <p class="note" id="gh-status"></p>
-
       <div class="actions">
         <button class="btn btn-primary" id="publishBtn" type="button">Publish directly to GitHub</button>
         <button class="btn" id="generate" type="button">Generate code instead</button>
       </div>
-      <p class="note" id="publishMsg" style="min-height:18px;"></p>
+      <p class="note" id="publishMsg" style="min-height:18px;">Publishing needs a GitHub connection — set it up via the &#9881; icon above.</p>
 
       <textarea id="output" readonly placeholder="Manually-generated code appears here if you use 'Generate code instead'..."></textarea>
       <p class="note" id="copyMsg" style="min-height:18px;"></p>
       <button class="btn" id="copy" type="button" style="margin-top:6px;">Copy to clipboard</button>
     </div>
 
+    <!-- MY POSTS PANEL -->
+    <div class="panel" id="panel-manage">
+      <p class="note" style="margin-top:0;">Loaded live from your repo. Deleting here commits the change directly to GitHub — same as publishing a new product.</p>
+      <button class="btn" id="refreshPosts" type="button">Refresh list</button>
+      <div id="postsList" style="margin-top:18px;"></div>
+      <p class="note" id="postsMsg"></p>
+    </div>
+
     <!-- TEAM PANEL -->
     <div class="panel" id="panel-team">
-      <p class="note" style="margin-bottom:18px;">This list is saved in this browser only — it does not grant real access by itself. To actually let someone edit the live site, also add them as a collaborator in your GitHub repo (Settings → Collaborators, role: Write for editor/uploader, Admin for administrator).</p>
+      <p class="field label" style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#C9A227;">Your real GitHub team</p>
+      <p class="note" style="margin-top:0;">Pulled live from your repo's actual collaborators — this is your real, enforced team list, not something stored in a browser.</p>
+      <button class="btn" id="refreshTeam" type="button">Refresh team</button>
+      <div id="collabList" style="margin-top:14px;"></div>
+      <p class="note" id="collabMsg"></p>
+
+      <hr style="border:none; border-top:1px solid #3A3A3D; margin:28px 0;" />
+
+      <p class="field label" style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#C9A227;">Recent activity</p>
+      <p class="note" style="margin-top:0;">Real commit history for script.js — who changed what, and when.</p>
+      <div id="activityList" style="margin-top:14px;"></div>
+      <p class="note" id="activityMsg"></p>
+
+      <hr style="border:none; border-top:1px solid #3A3A3D; margin:28px 0;" />
+
+      <p class="field label" style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#C9A227;">Add someone to the team</p>
+      <p class="note" style="margin-top:0;">This is the step that actually matters: add them as a GitHub collaborator so they get real access. On GitHub: your repo → Settings → Collaborators and teams → Add people → enter their GitHub username → choose <strong>Write</strong> (editor/uploader) or <strong>Admin</strong> (administrator). They'll get an invite email; once accepted, they show up above. Then have them log into this admin panel and add their own personal access token in Settings (⚙) — their token only works if GitHub has actually granted them access, so permissions are enforced for real.</p>
+
+      <hr style="border:none; border-top:1px solid #3A3A3D; margin:28px 0;" />
+
+      <p class="field label" style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#C9A227;">Panel logins (this device only)</p>
+      <p class="note" style="margin-top:0;">Just a name tag for who's currently using this admin panel on this device — not a real account, and not shared with anyone else's device. Skip this section unless you want a quick "who's working right now" label.</p>
 
       <div class="field">
         <label>Name</label>
@@ -153,18 +204,19 @@
         <input id="team-pass" placeholder="Choose a password" />
       </div>
       <div class="field">
-        <label>Role</label>
+        <label>Role label</label>
         <select id="team-role">
           <option value="admin">Administrator</option>
           <option value="editor">Editor</option>
           <option value="uploader">Uploader</option>
         </select>
       </div>
-      <button class="btn btn-primary" id="addPerson">Add person</button>
+      <button class="btn" id="addPerson">Add login</button>
 
       <div id="teamList" style="margin-top:24px;"></div>
     </div>
   </div>
+
 
   <script>
     // ---------------------------------------------------------------
@@ -228,7 +280,12 @@
       };
     });
 
-    // Team management
+    // Settings drawer
+    document.getElementById("settingsBtn").onclick = () => document.getElementById("settingsOverlay").classList.add("open");
+    document.getElementById("closeSettings").onclick = () => document.getElementById("settingsOverlay").classList.remove("open");
+    document.getElementById("settingsOverlay").onclick = (e) => {
+      if (e.target.id === "settingsOverlay") e.target.classList.remove("open");
+    };
     function renderTeam() {
       const el = document.getElementById("teamList");
       el.innerHTML = "";
@@ -416,6 +473,199 @@ ${products.map((p) => `      { name: "${p.name}", price: ${p.price}, url: "${p.u
       }
     }
     document.getElementById("publishBtn").onclick = publishToGitHub;
+
+    // ---------------------------------------------------------------
+    // My Posts — list + delete, read live from script.js on GitHub
+    // ---------------------------------------------------------------
+    function getConnection() {
+      return {
+        user: document.getElementById("gh-user").value.trim(),
+        repo: document.getElementById("gh-repo").value.trim(),
+        token: document.getElementById("gh-token").value.trim(),
+      };
+    }
+
+    function parsePosts(content) {
+      const match = content.match(/const POSTS = (\[[\s\S]*?\n\]);/);
+      if (!match) throw new Error("Couldn't find the POSTS list in script.js.");
+      // eslint-disable-next-line no-eval
+      return eval(match[1]);
+    }
+
+    function serializePosts(posts) {
+      const body = posts.map((p) => `  {
+    id: ${p.id},
+    image: ${JSON.stringify(p.image)},
+    caption: ${JSON.stringify(p.caption)},
+    tags: [${p.tags.map((t) => JSON.stringify(t)).join(", ")}],
+    products: [
+${p.products.map((pr) => `      { name: ${JSON.stringify(pr.name)}, price: ${pr.price}, url: ${JSON.stringify(pr.url)} },`).join("\n")}
+    ],
+  },`).join("\n");
+      return `const POSTS = [\n${body}\n];`;
+    }
+
+    function renderPostsList(posts) {
+      const el = document.getElementById("postsList");
+      el.innerHTML = "";
+      if (!posts.length) {
+        el.innerHTML = `<p class="note">No posts found.</p>`;
+        return;
+      }
+      posts.forEach((post) => {
+        const row = document.createElement("div");
+        row.className = "post-item";
+        row.innerHTML = `
+          <img src="${post.image}" alt="" />
+          <div class="info">
+            <p>${post.caption}</p>
+            <span>${post.products.length} product${post.products.length > 1 ? "s" : ""} &middot; ${post.tags.join(", ")}</span>
+          </div>
+          <button class="btn btn-danger" data-id="${post.id}">Delete</button>
+        `;
+        row.querySelector("button").onclick = () => deletePost(post.id);
+        el.appendChild(row);
+      });
+    }
+
+    async function fetchPosts() {
+      const { user, repo, token } = getConnection();
+      const msgEl = document.getElementById("postsMsg");
+      if (!user || !repo || !token) {
+        msgEl.textContent = "Connect your GitHub account (⚙ icon above) to see your posts.";
+        return;
+      }
+      msgEl.textContent = "Loading...";
+      try {
+        const res = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/script.js`, {
+          headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" },
+        });
+        if (!res.ok) throw new Error(`Couldn't load script.js (${res.status}).`);
+        const fileData = await res.json();
+        const content = decodeURIComponent(escape(atob(fileData.content)));
+        const posts = parsePosts(content);
+        renderPostsList(posts);
+        msgEl.textContent = "";
+      } catch (err) {
+        msgEl.textContent = "Error: " + err.message;
+      }
+    }
+    document.getElementById("refreshPosts").onclick = fetchPosts;
+    document.querySelector('.tab[data-tab="manage"]').addEventListener("click", fetchPosts);
+    document.querySelector('.tab[data-tab="team"]').addEventListener("click", () => {
+      fetchCollaborators();
+      fetchActivity();
+    });
+
+    async function fetchCollaborators() {
+      const { user, repo, token } = getConnection();
+      const listEl = document.getElementById("collabList");
+      const msgEl = document.getElementById("collabMsg");
+      if (!user || !repo || !token) {
+        msgEl.textContent = "Connect your GitHub account (⚙ icon above) to see your real team.";
+        return;
+      }
+      msgEl.textContent = "Loading...";
+      try {
+        const res = await fetch(`https://api.github.com/repos/${user}/${repo}/collaborators`, {
+          headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" },
+        });
+        if (res.status === 403 || res.status === 404) {
+          msgEl.textContent = "Can't load collaborators — your token needs the 'Administration: Read-only' permission too. Regenerate your fine-grained token with that added, or just check the list directly on GitHub (Settings → Collaborators).";
+          return;
+        }
+        if (!res.ok) throw new Error(`Request failed (${res.status}).`);
+        const collabs = await res.json();
+        listEl.innerHTML = "";
+        collabs.forEach((c) => {
+          const role = c.role_name || (c.permissions?.admin ? "admin" : c.permissions?.push ? "write" : "read");
+          const row = document.createElement("div");
+          row.className = "post-item";
+          row.innerHTML = `
+            <img src="${c.avatar_url}" alt="" style="border-radius:50%;" />
+            <div class="info">
+              <p>${c.login}</p>
+              <span>GitHub role: ${role}</span>
+            </div>
+          `;
+          listEl.appendChild(row);
+        });
+        msgEl.textContent = "";
+      } catch (err) {
+        msgEl.textContent = "Error: " + err.message;
+      }
+    }
+    document.getElementById("refreshTeam").onclick = fetchCollaborators;
+
+    async function fetchActivity() {
+      const { user, repo, token } = getConnection();
+      const listEl = document.getElementById("activityList");
+      const msgEl = document.getElementById("activityMsg");
+      if (!user || !repo || !token) return;
+      msgEl.textContent = "Loading...";
+      try {
+        const res = await fetch(`https://api.github.com/repos/${user}/${repo}/commits?path=script.js&per_page=10`, {
+          headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" },
+        });
+        if (!res.ok) throw new Error(`Request failed (${res.status}).`);
+        const commits = await res.json();
+        listEl.innerHTML = "";
+        commits.forEach((c) => {
+          const author = c.author?.login || c.commit.author.name;
+          const avatar = c.author?.avatar_url || "";
+          const when = new Date(c.commit.author.date).toLocaleString();
+          const row = document.createElement("div");
+          row.className = "post-item";
+          row.innerHTML = `
+            ${avatar ? `<img src="${avatar}" alt="" style="border-radius:50%;" />` : ""}
+            <div class="info">
+              <p>${c.commit.message}</p>
+              <span>${author} &middot; ${when}</span>
+            </div>
+          `;
+          listEl.appendChild(row);
+        });
+        msgEl.textContent = "";
+      } catch (err) {
+        msgEl.textContent = "Error: " + err.message;
+      }
+    }
+
+    async function deletePost(id) {
+      if (!confirm("Delete this post? This publishes the change immediately.")) return;
+      const { user, repo, token } = getConnection();
+      const msgEl = document.getElementById("postsMsg");
+      msgEl.textContent = "Deleting...";
+      try {
+        const apiUrl = `https://api.github.com/repos/${user}/${repo}/contents/script.js`;
+        const headers = { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" };
+        const getRes = await fetch(apiUrl, { headers });
+        if (!getRes.ok) throw new Error(`Couldn't read script.js (${getRes.status}).`);
+        const fileData = await getRes.json();
+        const content = decodeURIComponent(escape(atob(fileData.content)));
+        const posts = parsePosts(content).filter((p) => p.id !== id);
+        const newPostsBlock = serializePosts(posts);
+        const updatedContent = content.replace(/const POSTS = \[[\s\S]*?\n\];/, newPostsBlock);
+
+        const putRes = await fetch(apiUrl, {
+          method: "PUT",
+          headers: { ...headers, "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: `Delete post via admin panel (id ${id})`,
+            content: btoa(unescape(encodeURIComponent(updatedContent))),
+            sha: fileData.sha,
+          }),
+        });
+        if (!putRes.ok) {
+          const err = await putRes.json().catch(() => ({}));
+          throw new Error(err.message || `Delete failed (${putRes.status}).`);
+        }
+        msgEl.textContent = "Deleted. Site will update in about a minute.";
+        renderPostsList(posts);
+      } catch (err) {
+        msgEl.textContent = "Error: " + err.message;
+      }
+    }
   </script>
 </body>
 </html>
