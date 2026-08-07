@@ -66,6 +66,15 @@ const POSTS = [
       { name: "Silk scarf", price: 36, url: "https://example.com/product/scarf" },
     ],
   },
+  {
+    id: 1786087125482,
+    image: "",
+    caption: "",
+    tags: [],
+    products: [
+
+    ],
+  },
 ];
 
 // Filter buttons shown at the top — edit labels/values freely.
