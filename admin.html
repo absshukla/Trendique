@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin — Trendique</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  .admin-wrap { max-width: 600px; margin: 0 auto; padding: 40px 20px 80px; }
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: #C9A227; margin-bottom: 6px; }
+  .field input, .field select { width: 100%; padding: 10px 12px; border-radius: 4px; border: 1px solid #3A3A3D; background: #232326; color: #F2ECDE; font-size: 14px; font-family: 'Work Sans', sans-serif; }
+  .product-row { display: grid; grid-template-columns: 1fr 90px 1fr; gap: 8px; margin-bottom: 8px; }
+  .product-row input { padding: 8px 10px; font-size: 13px; }
+  .btn { padding: 10px 18px; border-radius: 999px; border: 1px solid #3A3A3D; background: transparent; color: #F2ECDE; font-size: 13px; cursor: pointer; font-family: 'Work Sans', sans-serif; }
+  .btn:hover { border-color: #8B8478; }
+  .btn-primary { background: #D64545; border-color: #D64545; color: #F2ECDE; font-weight: 600; }
+  .btn-primary:hover { background: #c23c3c; }
+  #output { width: 100%; min-height: 220px; margin-top: 10px; background: #F2ECDE; color: #201D1A; border-radius: 4px; padding: 14px; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; border: none; white-space: pre; }
+  .note { color: #8B8478; font-size: 13px; line-height: 1.6; margin-top: 8px; }
+  .actions { display: flex; gap: 10px; margin: 18px 0; flex-wrap: wrap; }
+  .warn { background: #2A2118; border: 1px solid #C9A227; color: #E8C868; font-size: 12.5px; padding: 10px 12px; border-radius: 6px; line-height: 1.6; margin-bottom: 22px; }
+  .login-screen { max-width: 340px; margin: 90px auto; padding: 0 20px; text-align: center; }
+  .checkbox-row { display: flex; align-items: center; gap: 8px; margin: 14px 0; font-size: 13px; color: #8B8478; justify-content: center; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+  .tab { padding: 8px 16px; border-radius: 999px; border: 1px solid #3A3A3D; background: transparent; color: #8B8478; font-size: 13px; cursor: pointer; }
+  .tab.active { background: #F2ECDE; color: #1B1B1D; border-color: #F2ECDE; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .team-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed #3A3A3D; font-size: 14px; }
+  .role-pill { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; padding: 3px 9px; border-radius: 999px; background: #3A3A3D; color: #F2ECDE; text-transform: uppercase; }
+  .img-toggle { display: flex; gap: 8px; margin-bottom: 8px; }
+  .img-toggle button { flex: 1; }
+  .thumb { max-width: 120px; border-radius: 4px; margin-top: 8px; display: block; }
+</style>
+</head>
+<body>
+
+  <!-- LOGIN SCREEN -->
+  <div class="login-screen" id="loginScreen">
+    <p class="eyebrow">Trendique</p>
+    <h1 style="font-family:'Fraunces',serif; font-size:28px; margin:6px 0 24px;">Admin login</h1>
+    <div class="field" style="text-align:left">
+      <label>Name</label>
+      <input id="loginName" placeholder="Your name" />
+    </div>
+    <div class="field" style="text-align:left">
+      <label>Password</label>
+      <input id="loginPass" type="password" placeholder="Password" />
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="rememberMe" />
+      <label for="rememberMe">Remember me on this device</label>
+    </div>
+    <button class="btn btn-primary" id="loginBtn" style="width:100%">Log in</button>
+    <p class="note" id="loginError" style="color:#D64545;"></p>
+    <p class="note">First time here? Default login is name <strong>Admin</strong>, password <strong>changeme</strong> — change it in the Team tab once you're in.</p>
+  </div>
+
+  <!-- ADMIN PANEL (hidden until logged in) -->
+  <div class="admin-wrap" id="adminPanel" style="display:none">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <p class="eyebrow" style="text-align:left; margin-bottom:4px;">Logged in as <span id="whoami"></span></p>
+        <h1 style="font-family:'Fraunces',serif; font-size:30px; margin:0 0 4px;">Admin panel</h1>
+      </div>
+      <button class="btn" id="logoutBtn">Log out</button>
+    </div>
+
+    <div class="warn">
+      Heads up: this login is a simple front-door lock, not a secure account system — anyone who reads this page's code can see the password list. Don't reuse a real password here. Real access to your files is controlled separately through your GitHub repo's Collaborators settings.
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="product">Add product</button>
+      <button class="tab" data-tab="team" id="teamTabBtn">Team</button>
+    </div>
+
+    <!-- ADD PRODUCT PANEL -->
+    <div class="panel active" id="panel-product">
+      <div class="img-toggle">
+        <button class="btn" id="useUrlBtn">Image URL</button>
+        <button class="btn" id="useFileBtn">Upload from device</button>
+      </div>
+      <div class="field" id="imageUrlField">
+        <label>Image URL</label>
+        <input id="f-image" placeholder="https://..." />
+      </div>
+      <div class="field" id="imageFileField" style="display:none">
+        <label>Choose photo</label>
+        <input id="f-imageFile" type="file" accept="image/*" />
+        <img id="imgPreview" class="thumb" style="display:none" />
+        <p class="note">The photo gets embedded directly into the code — fine for a few products, but keep photos small or the site will get slow to load.</p>
+      </div>
+
+      <div class="field">
+        <label>Caption</label>
+        <input id="f-caption" placeholder="e.g. Weekend fit check" />
+      </div>
+      <div class="field">
+        <label>Tags (comma separated — e.g. clothing, men)</label>
+        <input id="f-tags" placeholder="clothing, men" />
+      </div>
+
+      <p class="field label" style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#C9A227;">Products in this post</p>
+      <div id="productRows"></div>
+      <button class="btn" id="addRow" type="button">+ Add another product</button>
+
+      <hr style="border:none; border-top:1px solid #3A3A3D; margin:26px 0;" />
+
+      <p class="field label" style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#C9A227;">GitHub connection (for one-click publish)</p>
+      <p class="note" style="margin-top:0;">Create a token: GitHub → Settings (your account) → Developer settings → Personal access tokens → Fine-grained tokens → Generate new. Under Repository access, pick this repo only. Under Permissions, set <strong>Contents: Read and write</strong>. Copy the token here.</p>
+      <div class="field">
+        <label>GitHub username</label>
+        <input id="gh-user" placeholder="e.g. absshukla" />
+      </div>
+      <div class="field">
+        <label>Repository name</label>
+        <input id="gh-repo" placeholder="e.g. Trendique" />
+      </div>
+      <div class="field">
+        <label>Personal access token</label>
+        <input id="gh-token" type="password" placeholder="github_pat_..." />
+      </div>
+      <div class="checkbox-row" style="justify-content:flex-start;">
+        <input type="checkbox" id="gh-remember" />
+        <label for="gh-remember">Remember this connection on this device</label>
+      </div>
+      <button class="btn" id="gh-save" type="button">Save connection</button>
+      <p class="note" id="gh-status"></p>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="publishBtn" type="button">Publish directly to GitHub</button>
+        <button class="btn" id="generate" type="button">Generate code instead</button>
+      </div>
+      <p class="note" id="publishMsg" style="min-height:18px;"></p>
+
+      <textarea id="output" readonly placeholder="Manually-generated code appears here if you use 'Generate code instead'..."></textarea>
+      <p class="note" id="copyMsg" style="min-height:18px;"></p>
+      <button class="btn" id="copy" type="button" style="margin-top:6px;">Copy to clipboard</button>
+    </div>
+
+    <!-- TEAM PANEL -->
+    <div class="panel" id="panel-team">
+      <p class="note" style="margin-bottom:18px;">This list is saved in this browser only — it does not grant real access by itself. To actually let someone edit the live site, also add them as a collaborator in your GitHub repo (Settings → Collaborators, role: Write for editor/uploader, Admin for administrator).</p>
+
+      <div class="field">
+        <label>Name</label>
+        <input id="team-name" placeholder="Their name" />
+      </div>
+      <div class="field">
+        <label>Password (for this admin panel only)</label>
+        <input id="team-pass" placeholder="Choose a password" />
+      </div>
+      <div class="field">
+        <label>Role</label>
+        <select id="team-role">
+          <option value="admin">Administrator</option>
+          <option value="editor">Editor</option>
+          <option value="uploader">Uploader</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" id="addPerson">Add person</button>
+
+      <div id="teamList" style="margin-top:24px;"></div>
+    </div>
+  </div>
+
+  <script>
+    // ---------------------------------------------------------------
+    // People who can log in here. This is a soft lock only (see the
+    // warning banner above) — anyone can read these values in the page
+    // source. Manage people from the Team tab once logged in.
+    // ---------------------------------------------------------------
+    let USERS = JSON.parse(localStorage.getItem("trendique_users") || "null") || [
+      { name: "Admin", password: "changeme", role: "admin" },
+    ];
+    function saveUsers() { localStorage.setItem("trendique_users", JSON.stringify(USERS)); }
+
+    const loginScreen = document.getElementById("loginScreen");
+    const adminPanel = document.getElementById("adminPanel");
+
+    function showAdmin(user) {
+      loginScreen.style.display = "none";
+      adminPanel.style.display = "block";
+      document.getElementById("whoami").textContent = `${user.name} (${user.role})`;
+      document.getElementById("teamTabBtn").style.display = user.role === "admin" ? "inline-block" : "none";
+      renderTeam();
+    }
+
+    function attemptLogin() {
+      const name = document.getElementById("loginName").value.trim();
+      const pass = document.getElementById("loginPass").value;
+      const remember = document.getElementById("rememberMe").checked;
+      const user = USERS.find((u) => u.name.toLowerCase() === name.toLowerCase() && u.password === pass);
+      if (!user) {
+        document.getElementById("loginError").textContent = "Name or password not recognized.";
+        return;
+      }
+      if (remember) {
+        localStorage.setItem("trendique_session", JSON.stringify(user));
+      } else {
+        sessionStorage.setItem("trendique_session", JSON.stringify(user));
+      }
+      showAdmin(user);
+    }
+    document.getElementById("loginBtn").onclick = attemptLogin;
+
+    document.getElementById("logoutBtn").onclick = () => {
+      localStorage.removeItem("trendique_session");
+      sessionStorage.removeItem("trendique_session");
+      location.reload();
+    };
+
+    // Check for an existing session (remembered, or same-tab) on load
+    (function checkSession() {
+      const saved = localStorage.getItem("trendique_session") || sessionStorage.getItem("trendique_session");
+      if (saved) showAdmin(JSON.parse(saved));
+    })();
+
+    // Tabs
+    document.querySelectorAll(".tab").forEach((tab) => {
+      tab.onclick = () => {
+        document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
+        document.querySelectorAll(".panel").forEach((p) => p.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById("panel-" + tab.dataset.tab).classList.add("active");
+      };
+    });
+
+    // Team management
+    function renderTeam() {
+      const el = document.getElementById("teamList");
+      el.innerHTML = "";
+      USERS.forEach((u) => {
+        const row = document.createElement("div");
+        row.className = "team-row";
+        row.innerHTML = `<span>${u.name}</span><span class="role-pill">${u.role}</span>`;
+        el.appendChild(row);
+      });
+    }
+    document.getElementById("addPerson").onclick = () => {
+      const name = document.getElementById("team-name").value.trim();
+      const password = document.getElementById("team-pass").value;
+      const role = document.getElementById("team-role").value;
+      if (!name || !password) return;
+      USERS.push({ name, password, role });
+      saveUsers();
+      document.getElementById("team-name").value = "";
+      document.getElementById("team-pass").value = "";
+      renderTeam();
+    };
+
+    // Image source toggle
+    document.getElementById("useUrlBtn").onclick = () => {
+      document.getElementById("imageUrlField").style.display = "block";
+      document.getElementById("imageFileField").style.display = "none";
+    };
+    document.getElementById("useFileBtn").onclick = () => {
+      document.getElementById("imageUrlField").style.display = "none";
+      document.getElementById("imageFileField").style.display = "block";
+    };
+
+    let uploadedImageData = "";
+    document.getElementById("f-imageFile").onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          const maxW = 800; // resize down so the embedded code doesn't get huge
+          const scale = Math.min(1, maxW / img.width);
+          const canvas = document.createElement("canvas");
+          canvas.width = img.width * scale;
+          canvas.height = img.height * scale;
+          canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+          uploadedImageData = canvas.toDataURL("image/jpeg", 0.8);
+          const preview = document.getElementById("imgPreview");
+          preview.src = uploadedImageData;
+          preview.style.display = "block";
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    };
+
+    // Product rows
+    const rowsEl = document.getElementById("productRows");
+    function addProductRow(name = "", price = "", url = "") {
+      const row = document.createElement("div");
+      row.className = "product-row";
+      row.innerHTML = `
+        <input class="p-name" placeholder="Product name" value="${name}" />
+        <input class="p-price" placeholder="Price" value="${price}" />
+        <input class="p-url" placeholder="Buy link (https://...)" value="${url}" />
+      `;
+      rowsEl.appendChild(row);
+    }
+    addProductRow();
+    document.getElementById("addRow").onclick = () => addProductRow();
+
+    function buildProductEntry(id) {
+      const usingFile = document.getElementById("imageFileField").style.display !== "none";
+      const image = usingFile ? uploadedImageData : document.getElementById("f-image").value.trim();
+      const caption = document.getElementById("f-caption").value.trim();
+      const tags = document.getElementById("f-tags").value
+        .split(",").map((t) => t.trim().toLowerCase()).filter(Boolean);
+
+      const products = [...rowsEl.querySelectorAll(".product-row")].map((row) => {
+        const name = row.querySelector(".p-name").value.trim();
+        const price = parseFloat(row.querySelector(".p-price").value) || 0;
+        const url = row.querySelector(".p-url").value.trim();
+        return { name, price, url };
+      }).filter((p) => p.name);
+
+      return `  {
+    id: ${id},
+    image: "${image}",
+    caption: "${caption}",
+    tags: [${tags.map((t) => `"${t}"`).join(", ")}],
+    products: [
+${products.map((p) => `      { name: "${p.name}", price: ${p.price}, url: "${p.url}" },`).join("\n")}
+    ],
+  },`;
+    }
+
+    document.getElementById("generate").onclick = () => {
+      document.getElementById("output").value = buildProductEntry("REPLACE_WITH_NEXT_NUMBER");
+    };
+
+    document.getElementById("copy").onclick = () => {
+      const out = document.getElementById("output");
+      out.select();
+      document.execCommand("copy");
+      document.getElementById("copyMsg").textContent = "Copied — now paste it inside the POSTS array in script.js.";
+    };
+
+    // ---------------------------------------------------------------
+    // GitHub connection — save token so this device can publish directly.
+    // ---------------------------------------------------------------
+    function loadConnection() {
+      const saved = JSON.parse(localStorage.getItem("trendique_gh") || sessionStorage.getItem("trendique_gh") || "null");
+      if (saved) {
+        document.getElementById("gh-user").value = saved.user;
+        document.getElementById("gh-repo").value = saved.repo;
+        document.getElementById("gh-token").value = saved.token;
+      }
+    }
+    loadConnection();
+
+    document.getElementById("gh-save").onclick = () => {
+      const conn = {
+        user: document.getElementById("gh-user").value.trim(),
+        repo: document.getElementById("gh-repo").value.trim(),
+        token: document.getElementById("gh-token").value.trim(),
+      };
+      const remember = document.getElementById("gh-remember").checked;
+      const store = remember ? localStorage : sessionStorage;
+      store.setItem("trendique_gh", JSON.stringify(conn));
+      document.getElementById("gh-status").textContent = "Connection saved.";
+    };
+
+    async function publishToGitHub() {
+      const user = document.getElementById("gh-user").value.trim();
+      const repo = document.getElementById("gh-repo").value.trim();
+      const token = document.getElementById("gh-token").value.trim();
+      const msgEl = document.getElementById("publishMsg");
+
+      if (!user || !repo || !token) {
+        msgEl.textContent = "Fill in your GitHub username, repo name, and token first.";
+        return;
+      }
+
+      msgEl.textContent = "Publishing...";
+      const apiUrl = `https://api.github.com/repos/${user}/${repo}/contents/script.js`;
+      const headers = {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github+json",
+      };
+
+      try {
+        // 1. Get current script.js content + sha
+        const getRes = await fetch(apiUrl, { headers });
+        if (!getRes.ok) throw new Error(`Couldn't read script.js (${getRes.status}). Check username/repo/token permissions.`);
+        const fileData = await getRes.json();
+        const currentContent = decodeURIComponent(escape(atob(fileData.content)));
+
+        // 2. Insert the new product entry just before the POSTS array closes.
+        const marker = "];\n\n// Filter buttons";
+        if (!currentContent.includes(marker)) {
+          throw new Error("Couldn't find where to insert the new product — script.js may have been edited manually. Use 'Generate code instead' and paste it in by hand this time.");
+        }
+        const newId = Date.now();
+        const entry = buildProductEntry(newId);
+        const updatedContent = currentContent.replace(marker, `${entry}\n${marker}`);
+
+        // 3. Push the updated file back to GitHub
+        const putRes = await fetch(apiUrl, {
+          method: "PUT",
+          headers: { ...headers, "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: `Add product via admin panel: ${document.getElementById("f-caption").value.trim() || "new post"}`,
+            content: btoa(unescape(encodeURIComponent(updatedContent))),
+            sha: fileData.sha,
+          }),
+        });
+        if (!putRes.ok) {
+          const err = await putRes.json().catch(() => ({}));
+          throw new Error(err.message || `Publish failed (${putRes.status}).`);
+        }
+
+        msgEl.textContent = "Published! Your site will update in about a minute.";
+      } catch (err) {
+        msgEl.textContent = "Error: " + err.message;
+      }
+    }
+    document.getElementById("publishBtn").onclick = publishToGitHub;
+  </script>
+</body>
+</html>
