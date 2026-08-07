@@ -84,6 +84,15 @@ const POSTS = [
 
     ],
   },
+  {
+    id: 1786087301514,
+    image: "",
+    caption: "",
+    tags: [],
+    products: [
+
+    ],
+  },
 ];
 
 // Filter buttons shown at the top — edit labels/values freely.
