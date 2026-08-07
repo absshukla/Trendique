@@ -7,16 +7,6 @@
 // ---------------------------------------------------------------------------
 const POSTS = [
   {
-    id: 1,
-    image: "https://picsum.photos/seed/shelf1/600/750",
-    caption: "Autumn capsule wardrobe",
-    tags: ["clothing", "women"],
-    products: [
-      { name: "Wool overshirt, rust", price: 128, url: "https://example.com/product/overshirt" },
-      { name: "Selvedge denim", price: 165, url: "https://example.com/product/denim" },
-    ],
-  },
-  {
     id: 2,
     image: "https://picsum.photos/seed/shelf2/600/700",
     caption: "Everyday watch stack",
