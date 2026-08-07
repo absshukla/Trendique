@@ -47,16 +47,6 @@ const POSTS = [
     ],
   },
   {
-    id: 6,
-    image: "https://picsum.photos/seed/shelf6/600/780",
-    caption: "Accessories edit",
-    tags: ["watches", "clothing", "women"],
-    products: [
-      { name: "Chronograph watch", price: 240, url: "https://example.com/product/chrono" },
-      { name: "Silk scarf", price: 36, url: "https://example.com/product/scarf" },
-    ],
-  },
-  {
     id: 1786087125482,
     image: "",
     caption: "",
