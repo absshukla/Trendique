@@ -106,28 +106,6 @@ const POSTS = [
       },
     ],
   },
-  {
-    id: 5,
-    image: "https://picsum.photos/seed/trend5/600/760",
-    caption: "Denim & layers",
-    tags: ["clothing", "men", "women"],
-    trending: false,
-    products: [
-      {
-        name: "Raw denim jacket",
-        links: [
-          { store: "Flipkart", price: 138, url: "https://example.com/product/denim-jacket" },
-        ],
-      },
-      {
-        name: "Ribbed knit top",
-        links: [
-          { store: "Amazon", price: 44, url: "https://example.com/product/knit-top" },
-          { store: "Myntra", price: 41, url: "https://example.com/product/knit-top-myntra" },
-        ],
-      },
-    ],
-  },
 ];
 
 // Filter buttons shown at the top — edit labels/values freely, and make
