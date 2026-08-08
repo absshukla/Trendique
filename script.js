@@ -63,34 +63,6 @@ const POSTS = [
       },
     ],
   },
-  {
-    id: 3,
-    image: "https://picsum.photos/seed/trend3/600/900",
-    caption: "Streetwear fit check",
-    tags: ["clothing", "men"],
-    trending: true,
-    products: [
-      {
-        name: "Oversized hoodie",
-        links: [
-          { store: "Flipkart", price: 68, url: "https://example.com/product/hoodie" },
-        ],
-      },
-      {
-        name: "Cargo pants",
-        links: [
-          { store: "Amazon", price: 94, url: "https://example.com/product/cargo" },
-          { store: "Myntra", price: 89, url: "https://example.com/product/cargo-myntra" },
-        ],
-      },
-      {
-        name: "Canvas sneakers",
-        links: [
-          { store: "Amazon", price: 88, url: "https://example.com/product/sneakers" },
-        ],
-      },
-    ],
-  },
 ];
 
 // Filter buttons shown at the top — edit labels/values freely, and make
