@@ -91,21 +91,6 @@ const POSTS = [
       },
     ],
   },
-  {
-    id: 4,
-    image: "https://picsum.photos/seed/trend4/600/640",
-    caption: "Minimalist watch collection",
-    tags: ["watches", "women"],
-    trending: false,
-    products: [
-      {
-        name: "Gold mesh watch",
-        links: [
-          { store: "Amazon", price: 175, url: "https://example.com/product/gold-watch" },
-        ],
-      },
-    ],
-  },
 ];
 
 // Filter buttons shown at the top — edit labels/values freely, and make
