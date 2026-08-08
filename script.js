@@ -19,28 +19,7 @@
 //   badge). If you add a post by hand, any unique number works.
 // ---------------------------------------------------------------------------
 const POSTS = [
-  {
-    id: 2,
-    image: "https://picsum.photos/seed/trend2/600/520",
-    caption: "Everyday watch stack",
-    tags: ["watches", "men"],
-    trending: false,
-    products: [
-      {
-        name: "Steel field watch",
-        links: [
-          { store: "Amazon", price: 210, url: "https://example.com/product/field-watch" },
-          { store: "Flipkart", price: 199, url: "https://example.com/product/field-watch-fk" },
-        ],
-      },
-      {
-        name: "Leather NATO strap",
-        links: [
-          { store: "Amazon", price: 32, url: "https://example.com/product/strap" },
-        ],
-      },
-    ],
-  },
+
 ];
 
 // Filter buttons shown at the top — edit labels/values freely, and make
