@@ -128,27 +128,6 @@ const POSTS = [
       },
     ],
   },
-  {
-    id: 6,
-    image: "https://picsum.photos/seed/trend6/600/560",
-    caption: "Accessories edit",
-    tags: ["watches", "clothing", "women"],
-    trending: false,
-    products: [
-      {
-        name: "Chronograph watch",
-        links: [
-          { store: "Amazon", price: 240, url: "https://example.com/product/chrono" },
-        ],
-      },
-      {
-        name: "Silk scarf",
-        links: [
-          { store: "Flipkart", price: 36, url: "https://example.com/product/scarf" },
-        ],
-      },
-    ],
-  },
 ];
 
 // Filter buttons shown at the top — edit labels/values freely, and make
