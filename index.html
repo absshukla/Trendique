@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Trendique — Shop Every Pin</title>
+<meta name="description" content="Every outfit and find I pin, tagged and ready to buy — straight from Amazon, Flipkart, and wherever else it lives." />
+<meta property="og:title" content="Trendique — Shop Every Pin" />
+<meta property="og:description" content="Every outfit and find I pin, tagged and ready to buy." />
+<meta property="og:type" content="website" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📌</text></svg>" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="hero-inner">
+      <p class="eyebrow">Shop every pin</p>
+      <h1>Trend<em>ique</em></h1>
+      <p class="subtitle">Everything I pin gets tagged and priced right here — one tap through to Amazon, Flipkart, or wherever it actually lives.</p>
+      <a class="pin-follow" href="https://pinterest.com/thetrendique_" target="_blank" rel="noopener noreferrer">Follow @thetrendique_ on Pinterest ↗</a>
+    </div>
+    <nav class="trending-strip" id="trendingStrip" aria-label="Trending pins — tap to shop">
+      <!-- filled in by script.js -->
+    </nav>
+  </header>
+
+  <div class="controls-row">
+    <nav class="tags" id="tagFilters">
+      <!-- filled in by script.js -->
+    </nav>
+    <select class="currency-select" id="currencySelect" aria-label="Currency">
+      <option value="INR">₹ INR</option>
+      <option value="USD">$ USD</option>
+      <option value="EUR">€ EUR</option>
+      <option value="GBP">£ GBP</option>
+    </select>
+  </div>
+
+  <main class="corkboard" id="board">
+    <!-- post cards filled in by script.js -->
+  </main>
+
+  <div class="overlay" id="overlay">
+    <div class="drawer" id="drawer">
+      <div class="drawer-head">
+        <div>
+          <p class="drawer-eyebrow">Tagged in this post</p>
+          <h2 id="drawerTitle"></h2>
+        </div>
+        <button id="closeDrawer" aria-label="Close">&times;</button>
+      </div>
+      <div id="drawerItems" class="drawer-items"></div>
+      <div class="drawer-total">
+        <span id="itemCount"></span>
+        <span id="totalPrice"></span>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <a class="footer-follow" href="https://pinterest.com/thetrendique_" target="_blank" rel="noopener noreferrer">Follow @thetrendique_ on Pinterest ↗</a>
+    <p class="footer-disclosure">Some links on this page are affiliate links — if you buy through them, Trendique may earn a small commission at no extra cost to you.</p>
+    <p class="footer-copyright">&copy; <span id="year"></span> Trendique</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

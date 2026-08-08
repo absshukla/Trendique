@@ -1,0 +1,508 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+/* ---------------------------------------------------------------------
+   DESIGN TOKENS — change these to re-theme the whole site + admin panel.
+   admin.css reuses this same set of variables.
+------------------------------------------------------------------------ */
+:root {
+  --ink: #17151A;          /* page background */
+  --ink-soft: #211E26;     /* raised panels on dark bg */
+  --paper: #F6EFE1;        /* pin card / drawer background */
+  --paper-dim: #E7DBC3;    /* dashed dividers on paper */
+  --berry: #B3223D;        /* primary accent — pushpin, price, buy */
+  --berry-dark: #8D1B31;   /* accent hover */
+  --gold: #CBA135;         /* secondary accent — eyebrow, trending badge */
+  --teal: #3E7C74;         /* tertiary accent — new badge */
+  --muted: #948C7C;        /* muted text on dark */
+  --muted-on-paper: #8A8272;
+  --line: #34313A;         /* hairline on dark */
+
+  --font-display: 'Fraunces', serif;
+  --font-body: 'Work Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  --shadow-card: 0 10px 24px rgba(0,0,0,0.35);
+  --shadow-card-hover: 0 22px 40px rgba(0,0,0,0.45);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--ink);
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(255,255,255,0.035) 1px, transparent 0);
+  background-size: 20px 20px;
+  font-family: var(--font-body);
+  color: var(--paper);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------------
+   HERO
+------------------------------------------------------------------------ */
+.site-header {
+  padding: 52px 20px 8px;
+}
+
+.hero-inner {
+  max-width: 620px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin: 0 0 12px;
+}
+
+.site-header h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(38px, 8vw, 64px);
+  margin: 0;
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+
+.site-header h1 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--gold);
+}
+
+.subtitle {
+  color: var(--muted);
+  max-width: 440px;
+  margin: 16px auto 0;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.pin-follow {
+  display: inline-block;
+  margin-top: 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  color: var(--paper);
+  text-decoration: none;
+  border-bottom: 1px solid var(--berry);
+  padding-bottom: 2px;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+.pin-follow:hover { color: var(--gold); border-color: var(--gold); }
+
+/* Trending strip — horizontally scrolling peek of pinned photos */
+.trending-strip {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding: 28px 20px 10px;
+  margin: 0 auto;
+  max-width: 640px;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.trending-strip::-webkit-scrollbar { display: none; }
+
+.strip-pin {
+  flex: 0 0 auto;
+  width: 76px;
+  height: 96px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: var(--paper);
+  scroll-snap-align: start;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.strip-pin:nth-child(odd) { transform: rotate(-4deg); }
+.strip-pin:nth-child(even) { transform: rotate(4deg); }
+.strip-pin:hover, .strip-pin:focus-visible {
+  transform: rotate(0deg) translateY(-4px);
+  box-shadow: 0 14px 26px rgba(0,0,0,0.5);
+}
+.strip-pin img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ---------------------------------------------------------------------
+   CONTROLS — tag filters + currency
+------------------------------------------------------------------------ */
+.controls-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 30px 16px 4px;
+  position: relative;
+}
+
+.currency-select {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  cursor: pointer;
+}
+.currency-select:hover { border-color: var(--muted); color: var(--paper); }
+
+.tags {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 0;
+}
+
+.tag-btn {
+  padding: 9px 17px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all 160ms ease;
+}
+.tag-btn:hover { border-color: var(--muted); color: var(--paper); }
+.tag-btn.active {
+  background: var(--paper);
+  color: var(--ink);
+  border-color: var(--paper);
+}
+
+/* ---------------------------------------------------------------------
+   CORKBOARD — masonry grid of pinned cards
+------------------------------------------------------------------------ */
+.corkboard {
+  padding: 34px 20px 90px;
+}
+
+.grid {
+  column-width: 230px;
+  column-gap: 30px;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.pin-card {
+  display: inline-block;
+  width: 100%;
+  break-inside: avoid;
+  position: relative;
+  background: var(--paper);
+  padding: 10px 10px 16px;
+  border-radius: 3px;
+  box-shadow: var(--shadow-card);
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  margin: 0 0 30px;
+  transform: rotate(var(--tilt, 0deg));
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+
+.pin-card:hover, .pin-card:focus-visible {
+  transform: translateY(-6px) rotate(0deg);
+  box-shadow: var(--shadow-card-hover);
+  z-index: 2;
+}
+
+.pushpin {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--berry);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  z-index: 1;
+}
+
+.img-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+.img-wrap img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 400ms ease;
+}
+.pin-card:hover .img-wrap img { transform: scale(1.045); }
+
+.category-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(23,21,26,0.78);
+  color: var(--paper);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.badge-stack {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: flex-end;
+}
+
+.badge {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  color: var(--ink);
+}
+.badge-trending { background: var(--gold); }
+.badge-new { background: var(--teal); color: var(--paper); }
+
+.price-tag {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: var(--berry);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 2px;
+}
+
+.pin-card .caption {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+  color: #201D1A;
+  margin-top: 12px;
+  margin-bottom: 2px;
+  line-height: 1.35;
+}
+
+.pin-card .item-count {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--muted-on-paper);
+  margin: 0;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--muted);
+  padding: 60px 20px;
+  font-size: 14px;
+}
+
+/* ---------------------------------------------------------------------
+   DRAWER — bottom sheet with per-store buy buttons
+------------------------------------------------------------------------ */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 50;
+}
+.overlay.open { display: flex; }
+
+.drawer {
+  background: var(--paper);
+  color: #201D1A;
+  width: 100%;
+  max-width: 480px;
+  border-radius: 12px 12px 0 0;
+  padding: 22px 22px 28px;
+  max-height: 82vh;
+  overflow-y: auto;
+  animation: slideUp 320ms cubic-bezier(.2,.8,.2,1);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(24px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.drawer-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+
+.drawer-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted-on-paper);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.drawer-head h2 {
+  font-family: var(--font-display);
+  font-size: 21px;
+  margin: 4px 0 0;
+  line-height: 1.25;
+}
+
+#closeDrawer {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 26px;
+  line-height: 1;
+  color: #201D1A;
+  padding: 4px;
+  flex-shrink: 0;
+}
+
+.drawer-items {
+  border-top: 1px dashed var(--paper-dim);
+  padding-top: 6px;
+}
+
+.drawer-item {
+  padding: 14px 0;
+  border-bottom: 1px dashed var(--paper-dim);
+}
+.drawer-item:last-child { border-bottom: none; }
+
+.drawer-item .name {
+  margin: 0 0 9px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #201D1A;
+}
+
+.store-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.store-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: var(--ink);
+  color: var(--paper);
+  text-decoration: none;
+  transition: transform 150ms ease, background 150ms ease;
+}
+.store-btn:hover, .store-btn:focus-visible {
+  background: var(--berry);
+  transform: translateY(-2px);
+}
+.store-name {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.75;
+}
+.store-price {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.drawer-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid #201D1A;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--muted-on-paper);
+}
+#totalPrice { color: #201D1A; font-size: 14px; font-weight: 500; }
+
+/* ---------------------------------------------------------------------
+   FOOTER
+------------------------------------------------------------------------ */
+.site-footer {
+  text-align: center;
+  padding: 40px 20px 34px;
+  border-top: 1px solid var(--line);
+  margin-top: 20px;
+}
+
+.footer-follow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  color: var(--gold);
+  text-decoration: none;
+}
+.footer-follow:hover { color: var(--paper); }
+
+.footer-disclosure {
+  max-width: 480px;
+  margin: 16px auto 0;
+  color: var(--muted);
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+
+.footer-copyright {
+  color: #56504A;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  margin-top: 20px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .pin-card, .drawer, .strip-pin, .img-wrap img { animation: none !important; transition: none !important; }
+}
+
+@media (max-width: 480px) {
+  .grid { column-width: 155px; column-gap: 16px; }
+  .pin-card { padding: 8px 8px 14px; margin-bottom: 16px; }
+}

@@ -1,0 +1,240 @@
+/* Builds on the tokens + fonts + .pin-card/.drawer-item styles already
+   defined in style.css (admin.html links both files). */
+
+body { background: var(--ink); }
+
+.admin-shell { max-width: 980px; margin: 0 auto; padding: 40px 20px 90px; }
+
+/* ---------------------------------------------------------------------
+   LOGIN
+------------------------------------------------------------------------ */
+.login-screen { max-width: 340px; margin: 100px auto; padding: 0 20px; text-align: center; }
+.login-screen .eyebrow { text-align: center; }
+.login-screen h1 { font-family: var(--font-display); font-size: 28px; margin: 6px 0 26px; }
+.checkbox-row { display: flex; align-items: center; gap: 8px; margin: 14px 0; font-size: 13px; color: var(--muted); justify-content: center; }
+.checkbox-row.left { justify-content: flex-start; }
+
+/* ---------------------------------------------------------------------
+   TOP BAR + TABS
+------------------------------------------------------------------------ */
+.admin-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.admin-topbar h1 { font-family: var(--font-display); font-size: 30px; margin: 2px 0 0; }
+.admin-topbar .eyebrow { text-align: left; margin-bottom: 4px; }
+.topbar-actions { display: flex; gap: 8px; }
+
+.warn {
+  background: #2A2118;
+  border: 1px solid var(--gold);
+  color: #E8C868;
+  font-size: 12.5px;
+  padding: 11px 14px;
+  border-radius: 8px;
+  line-height: 1.6;
+  margin: 20px 0 26px;
+}
+
+.tabs { display: flex; gap: 8px; margin-bottom: 26px; flex-wrap: wrap; }
+.tab {
+  padding: 9px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+.tab:hover { border-color: var(--muted); color: var(--paper); }
+.tab.active { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+
+.panel { display: none; }
+.panel.active { display: block; }
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin: 0 0 10px;
+}
+
+.note { color: var(--muted); font-size: 13px; line-height: 1.65; margin: 6px 0; }
+.divider { border: none; border-top: 1px solid var(--line); margin: 30px 0; }
+
+/* ---------------------------------------------------------------------
+   BUTTONS
+------------------------------------------------------------------------ */
+.btn {
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--paper);
+  font-size: 13px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all 150ms ease;
+}
+.btn:hover { border-color: var(--muted); }
+.btn-primary { background: var(--berry); border-color: var(--berry); color: var(--paper); font-weight: 600; }
+.btn-primary:hover { background: var(--berry-dark); border-color: var(--berry-dark); }
+.btn-danger { border-color: var(--berry); color: var(--berry); }
+.btn-danger:hover { background: var(--berry); color: var(--paper); }
+.btn-icon { padding: 9px 13px; font-size: 15px; line-height: 1; }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+.actions { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
+
+/* ---------------------------------------------------------------------
+   FORM LAYOUT — two columns on wide screens, preview pinned on the right
+------------------------------------------------------------------------ */
+.admin-layout { display: block; }
+.preview-pane { margin-bottom: 30px; }
+.form-pane { }
+
+@media (min-width: 900px) {
+  .admin-layout { display: grid; grid-template-columns: 1fr 300px; gap: 34px; align-items: start; }
+  .form-pane { grid-column: 1; grid-row: 1; }
+  .preview-pane { grid-column: 2; grid-row: 1; position: sticky; top: 24px; margin-bottom: 0; }
+}
+
+.preview-box {
+  background: var(--ink-soft);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 20px;
+}
+.preview-box .section-label { margin-bottom: 16px; }
+.preview-card-slot { display: flex; justify-content: center; }
+.preview-card-slot .pin-card { cursor: default; margin: 0; max-width: 220px; }
+.preview-card-slot .pin-card:hover { transform: rotate(0deg); }
+.preview-meta { margin-top: 16px; font-size: 12px; color: var(--muted); line-height: 1.7; font-family: var(--font-mono); }
+.preview-meta strong { color: var(--paper); }
+
+.field { margin-bottom: 18px; }
+.field label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+.field input, .field select, .field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--ink-soft);
+  color: var(--paper);
+  font-size: 14px;
+  font-family: var(--font-body);
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+.field-hint { font-size: 11.5px; color: var(--muted); margin-top: 5px; }
+
+.img-toggle { display: flex; gap: 8px; margin-bottom: 12px; }
+.img-toggle button { flex: 1; }
+.thumb { max-width: 140px; border-radius: 4px; margin-top: 10px; display: block; }
+.drop-zone {
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  padding: 18px;
+  text-align: center;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+.drop-zone.drag-over { border-color: var(--gold); background: rgba(203,161,53,0.08); }
+
+/* ---------------------------------------------------------------------
+   PRODUCTS + NESTED STORE LINKS
+------------------------------------------------------------------------ */
+.product-block {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 14px;
+  background: var(--ink-soft);
+}
+.product-block-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.product-block-head .field { flex: 1; margin-bottom: 0; }
+
+.link-rows { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.link-row {
+  display: grid;
+  grid-template-columns: 1fr 90px 1.4fr auto;
+  gap: 8px;
+  align-items: center;
+}
+.link-row input { padding: 8px 10px; font-size: 13px; }
+.link-row .btn-icon { padding: 8px 11px; font-size: 13px; }
+
+@media (max-width: 640px) {
+  .link-row { grid-template-columns: 1fr 1fr; grid-template-areas: "store price" "url remove"; }
+  .link-row input:nth-child(1) { grid-area: store; }
+  .link-row input:nth-child(2) { grid-area: price; }
+  .link-row input:nth-child(3) { grid-area: url; }
+  .link-row button { grid-area: remove; }
+}
+
+#output {
+  width: 100%;
+  min-height: 200px;
+  margin-top: 10px;
+  background: var(--paper);
+  color: #201D1A;
+  border-radius: 8px;
+  padding: 14px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  border: none;
+  white-space: pre;
+}
+
+/* ---------------------------------------------------------------------
+   SETTINGS DRAWER
+------------------------------------------------------------------------ */
+.settings-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: none; justify-content: flex-end; z-index: 60; }
+.settings-overlay.open { display: flex; }
+.settings-drawer { background: var(--ink); width: 100%; max-width: 380px; height: 100%; padding: 26px 22px; overflow-y: auto; border-left: 1px solid var(--line); }
+.settings-drawer-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.settings-drawer-head h2 { font-family: var(--font-display); font-size: 20px; margin: 0; }
+
+/* ---------------------------------------------------------------------
+   LISTS — posts, collaborators, activity, local team
+------------------------------------------------------------------------ */
+.list-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 11px 0;
+  border-bottom: 1px dashed var(--line);
+}
+.list-row:last-child { border-bottom: none; }
+.list-row img { width: 44px; height: 44px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
+.list-row img.round { border-radius: 50%; }
+.list-row .info { flex: 1; min-width: 0; }
+.list-row .info p { margin: 0; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.list-row .info span { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+
+.team-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed var(--line); font-size: 14px; gap: 10px; }
+.team-row:last-child { border-bottom: none; }
+.role-pill { font-family: var(--font-mono); font-size: 10.5px; padding: 3px 9px; border-radius: 999px; background: var(--line); color: var(--paper); text-transform: uppercase; flex-shrink: 0; }
+.team-row-right { display: flex; align-items: center; gap: 8px; }

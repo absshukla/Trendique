@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin — Trendique</title>
+<meta name="robots" content="noindex" />
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+
+  <!-- LOGIN SCREEN -->
+  <div class="login-screen" id="loginScreen">
+    <p class="eyebrow">Trendique</p>
+    <h1>Admin login</h1>
+    <div class="field" style="text-align:left">
+      <label>Name</label>
+      <input id="loginName" placeholder="Your name" autocomplete="username" />
+    </div>
+    <div class="field" style="text-align:left">
+      <label>Password</label>
+      <input id="loginPass" type="password" placeholder="Password" autocomplete="current-password" />
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="rememberMe" />
+      <label for="rememberMe">Remember me on this device</label>
+    </div>
+    <button class="btn btn-primary" id="loginBtn" style="width:100%">Log in</button>
+    <p class="note" id="loginError" style="color:var(--berry); min-height:18px;"></p>
+    <p class="note">First time here? Default login is name <strong>Admin</strong>, password <strong>changeme</strong> — change it from the Team tab once you're in.</p>
+  </div>
+
+  <!-- ADMIN PANEL (hidden until logged in) -->
+  <div class="admin-shell" id="adminPanel" style="display:none">
+    <div class="admin-topbar">
+      <div>
+        <p class="eyebrow">Logged in as <span id="whoami"></span></p>
+        <h1>Admin panel</h1>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-icon" id="settingsBtn" title="GitHub connection" aria-label="GitHub connection">&#9881;</button>
+        <button class="btn" id="logoutBtn">Log out</button>
+      </div>
+    </div>
+
+    <div class="warn">
+      Heads up: this login is a simple front-door lock, not a secure account system — anyone who reads this page's code can see the password list. Don't reuse a real password here. Real access to your files is controlled separately through your GitHub repo's Collaborators settings — see the Team tab.
+    </div>
+
+    <!-- SETTINGS DRAWER -->
+    <div id="settingsOverlay" class="settings-overlay">
+      <div class="settings-drawer" id="settingsDrawer">
+        <div class="settings-drawer-head">
+          <h2>GitHub connection</h2>
+          <button class="btn btn-icon" id="closeSettings" aria-label="Close">&times;</button>
+        </div>
+        <p class="note" style="margin-top:0;">Create a token: GitHub → Settings (your account) → Developer settings → Personal access tokens → Fine-grained tokens → Generate new. Repository access: <strong>this repo only</strong>. Permissions: <strong>Contents → Read and write</strong>. Give it an expiry date and label it with your name.</p>
+        <div class="field">
+          <label>GitHub username</label>
+          <input id="gh-user" placeholder="e.g. absshukla" />
+        </div>
+        <div class="field">
+          <label>Repository name</label>
+          <input id="gh-repo" placeholder="e.g. Trendique" />
+        </div>
+        <div class="field">
+          <label>Personal access token</label>
+          <input id="gh-token" type="password" placeholder="github_pat_..." autocomplete="off" />
+        </div>
+        <div class="checkbox-row left">
+          <input type="checkbox" id="gh-remember" />
+          <label for="gh-remember">Remember this connection on this device</label>
+        </div>
+        <button class="btn btn-primary" id="gh-save" type="button" style="width:100%;">Save connection</button>
+        <p class="note" id="gh-status"></p>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="product">Add post</button>
+      <button class="tab" data-tab="manage">My posts</button>
+      <button class="tab" data-tab="team" id="teamTabBtn">Team</button>
+    </div>
+
+    <!-- ADD POST PANEL -->
+    <div class="panel active" id="panel-product">
+      <div class="admin-layout">
+
+        <div class="preview-pane">
+          <div class="preview-box">
+            <p class="section-label">Live preview</p>
+            <div class="preview-card-slot" id="previewCardSlot"></div>
+            <div class="preview-meta" id="previewMeta"></div>
+          </div>
+        </div>
+
+        <div class="form-pane">
+          <p class="section-label">Photo</p>
+          <div class="img-toggle">
+            <button class="btn" id="useUrlBtn" type="button">Image URL</button>
+            <button class="btn" id="useFileBtn" type="button">Upload / paste</button>
+          </div>
+          <div class="field" id="imageUrlField">
+            <label>Image URL</label>
+            <input id="f-image" placeholder="https://..." />
+            <p class="field-hint">Pinned something on Pinterest? Open the pin, right-click the photo → Copy image address, and paste it here.</p>
+          </div>
+          <div class="field" id="imageFileField" style="display:none">
+            <label>Choose or paste a photo</label>
+            <div class="drop-zone" id="dropZone">
+              <input id="f-imageFile" type="file" accept="image/*" />
+              <p class="field-hint" style="margin-top:10px;">Drag a file in, browse, or copy an image from Pinterest and paste it here with Ctrl+V (⌘V on Mac).</p>
+              <img id="imgPreview" class="thumb" style="display:none" />
+            </div>
+            <p class="field-hint">The photo gets embedded directly into the code — fine for a handful of products, but keep photos small or the site will get slow to load.</p>
+          </div>
+
+          <div class="field">
+            <label>Caption</label>
+            <input id="f-caption" placeholder="e.g. Weekend fit check" />
+          </div>
+          <div class="field">
+            <label>Tags (comma separated — e.g. clothing, men)</label>
+            <input id="f-tags" placeholder="clothing, men" />
+          </div>
+          <div class="checkbox-row left">
+            <input type="checkbox" id="f-trending" />
+            <label for="f-trending">Flag as Trending 🔥</label>
+          </div>
+
+          <p class="section-label" style="margin-top:26px;">Products in this post</p>
+          <p class="note" style="margin-top:0;">Add every place your audience can actually buy each item — one row per store.</p>
+          <div id="productBlocks"></div>
+          <button class="btn" id="addProduct" type="button">+ Add another product</button>
+
+          <hr class="divider" />
+
+          <div class="actions">
+            <button class="btn btn-primary" id="publishBtn" type="button">Publish directly to GitHub</button>
+            <button class="btn" id="generate" type="button">Generate code instead</button>
+          </div>
+          <p class="note" id="publishMsg" style="min-height:18px;">Publishing needs a GitHub connection — set it up via the &#9881; icon above.</p>
+
+          <textarea id="output" readonly placeholder="Manually-generated code appears here if you use 'Generate code instead'..."></textarea>
+          <p class="note" id="copyMsg" style="min-height:18px;"></p>
+          <button class="btn" id="copy" type="button" style="margin-top:6px;">Copy to clipboard</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- MY POSTS PANEL -->
+    <div class="panel" id="panel-manage">
+      <p class="note" style="margin-top:0;">Loaded live from your repo. Deleting here commits the change directly to GitHub — same as publishing a new post.</p>
+      <button class="btn" id="refreshPosts" type="button">Refresh list</button>
+      <div id="postsList" style="margin-top:18px;"></div>
+      <p class="note" id="postsMsg"></p>
+    </div>
+
+    <!-- TEAM PANEL -->
+    <div class="panel" id="panel-team">
+      <p class="section-label">Your real GitHub team</p>
+      <p class="note" style="margin-top:0;">Pulled live from your repo's actual collaborators — this is your real, enforced team list, not something stored in a browser.</p>
+      <button class="btn" id="refreshTeam" type="button">Refresh team</button>
+      <div id="collabList" style="margin-top:14px;"></div>
+      <p class="note" id="collabMsg"></p>
+
+      <hr class="divider" />
+
+      <p class="section-label">Recent activity</p>
+      <p class="note" style="margin-top:0;">Real commit history for script.js — who changed what, and when.</p>
+      <div id="activityList" style="margin-top:14px;"></div>
+      <p class="note" id="activityMsg"></p>
+
+      <hr class="divider" />
+
+      <p class="section-label">Add someone to the team</p>
+      <p class="note" style="margin-top:0;">This is the step that actually matters: add them as a GitHub collaborator so they get real access. On GitHub: your repo → Settings → Collaborators and teams → Add people → enter their GitHub username → choose <strong>Write</strong> (editor/uploader) or <strong>Admin</strong> (administrator). They'll get an invite email; once accepted, they show up above. Then have them log into this admin panel and add their own personal access token in Settings (⚙) — their token only works if GitHub has actually granted them access, so permissions are enforced for real.</p>
+
+      <hr class="divider" />
+
+      <p class="section-label">Panel logins (this device only)</p>
+      <p class="note" style="margin-top:0;">Just a name tag for who's currently using this admin panel — not a real account. Names entered here also get credited in the GitHub commit message when that person publishes, so "My posts" and your commit history show who did what.</p>
+
+      <div class="field">
+        <label>Name</label>
+        <input id="team-name" placeholder="Their name" />
+      </div>
+      <div class="field">
+        <label>Password (for this admin panel only)</label>
+        <input id="team-pass" placeholder="Choose a password" />
+      </div>
+      <div class="field">
+        <label>Role label</label>
+        <select id="team-role">
+          <option value="admin">Administrator</option>
+          <option value="editor">Editor</option>
+          <option value="uploader">Uploader</option>
+        </select>
+      </div>
+      <button class="btn" id="addPerson" type="button">Add login</button>
+
+      <div id="teamList" style="margin-top:24px;"></div>
+    </div>
+  </div>
+
+  <datalist id="storeOptions">
+    <option value="Amazon"></option>
+    <option value="Flipkart"></option>
+    <option value="Myntra"></option>
+    <option value="Ajio"></option>
+    <option value="Nykaa"></option>
+    <option value="Meesho"></option>
+    <option value="Etsy"></option>
+  </datalist>
+
+  <script src="admin.js"></script>
+</body>
+</html>
