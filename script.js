@@ -20,28 +20,6 @@
 // ---------------------------------------------------------------------------
 const POSTS = [
   {
-    id: 1,
-    image: "https://picsum.photos/seed/trend1/600/760",
-    caption: "Autumn capsule wardrobe",
-    tags: ["clothing", "women"],
-    trending: true,
-    products: [
-      {
-        name: "Wool overshirt, rust",
-        links: [
-          { store: "Amazon", price: 128, url: "https://example.com/product/overshirt-amazon" },
-          { store: "Flipkart", price: 118, url: "https://example.com/product/overshirt-flipkart" },
-        ],
-      },
-      {
-        name: "Selvedge denim",
-        links: [
-          { store: "Amazon", price: 165, url: "https://example.com/product/denim" },
-        ],
-      },
-    ],
-  },
-  {
     id: 2,
     image: "https://picsum.photos/seed/trend2/600/520",
     caption: "Everyday watch stack",
